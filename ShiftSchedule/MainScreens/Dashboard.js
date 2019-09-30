@@ -3,10 +3,12 @@ import React from 'react';
 import Firebase from '../config/Firebase';
 //import react in our code.
 import {Text, View, Button} from 'react-native';
+import {Header} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default class Dashboard extends React.Component {
   static navigationOptions = {
-    tabBarColor: 'grey',
+    tabBarIcon: <Icon name="home" size={22} />,
   };
   handleSignout = () => {
     Firebase.auth().signOut();
@@ -14,7 +16,9 @@ export default class Dashboard extends React.Component {
   };
   render() {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <View>
+        <Header centerComponent={{text: 'Dashboard', style: {color: '#fff'}}} />
+
         <Text>Details!</Text>
         <Button
           title="Detail"
