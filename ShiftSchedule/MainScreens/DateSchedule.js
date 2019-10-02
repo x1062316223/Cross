@@ -1,7 +1,7 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {Text, View, Button} from 'react-native';
+import {View, StyleSheet, Platform} from 'react-native';
 import {Header, ListItem} from 'react-native-elements';
 
 const list = [
@@ -30,6 +30,7 @@ export default class DateSchedule extends React.Component {
     return (
       <View>
         <Header
+          containerStyle={styles.header}
           centerComponent={{text: 'Assign Employee', style: {color: '#fff'}}}
           leftComponent={{
             text: 'Back',
@@ -56,3 +57,12 @@ export default class DateSchedule extends React.Component {
     );
   }
 }
+const styles = StyleSheet.create({
+  header: {
+    ...Platform.select({
+      android: {height: 56, paddingTop: 0},
+    }),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

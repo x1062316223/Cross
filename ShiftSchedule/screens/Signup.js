@@ -11,14 +11,21 @@ import Firebase from '../config/Firebase';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {updateEmail, updatePassword, signup} from '../actions/user';
+import {
+  updateEmail,
+  updatePassword,
+  signup,
+  updateFirstName,
+  updateLastName,
+} from '../actions/user';
 
 class Signup extends React.Component {
   static navigationOptions = {
     title: 'Signup',
   };
   state = {
-    name: '',
+    firstname: '',
+    lastname: '',
     email: '',
     password: '',
   };
@@ -36,6 +43,20 @@ class Signup extends React.Component {
           value={this.props.user.email}
           onChangeText={email => this.props.updateEmail(email)}
           placeholder="Email"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.inputBox}
+          value={this.props.user.firstname}
+          onChangeText={firstname => this.props.updateFirstName(firstname)}
+          placeholder="Firstname"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.inputBox}
+          value={this.props.user.lastname}
+          onChangeText={lastname => this.props.updateLastName(lastname)}
+          placeholder="Lastname"
           autoCapitalize="none"
         />
         <TextInput
@@ -91,7 +112,10 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({updateEmail, updatePassword, signup}, dispatch);
+  return bindActionCreators(
+    {updateEmail, updatePassword, signup, updateFirstName, updateLastName},
+    dispatch,
+  );
 };
 
 const mapStateToProps = state => {

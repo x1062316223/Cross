@@ -1,7 +1,7 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {View} from 'react-native';
+import {Text, View, Button, StyleSheet, Platform} from 'react-native';
 import {Header, ListItem} from 'react-native-elements';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
@@ -38,7 +38,10 @@ export default class Schedule extends React.Component {
   render() {
     return (
       <View>
-        <Header centerComponent={{text: 'Schedule', style: {color: '#fff'}}} />
+        <Header
+          containerStyle={styles.header}
+          centerComponent={{text: 'Schedule', style: {color: '#fff'}}}
+        />
 
         <CalendarStrip
           onDateSelected={() =>
@@ -70,3 +73,12 @@ export default class Schedule extends React.Component {
     );
   }
 }
+const styles = StyleSheet.create({
+  header: {
+    ...Platform.select({
+      android: {height: 56, paddingTop: 0},
+    }),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -18,7 +18,7 @@ class Login extends React.Component {
       if (user) {
         this.props.getUser(user.uid);
         if (this.props.user != null) {
-          this.props.navigation.navigate('Dashboard');
+          this.props.navigation.navigate('Dashboard', user.id);
         }
       }
     });

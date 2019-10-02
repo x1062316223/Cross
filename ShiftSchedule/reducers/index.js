@@ -1,5 +1,12 @@
 import {combineReducers} from 'redux';
-import {LOGIN, SIGNUP, UPDATE_EMAIL, UPDATE_PASSWORD} from '../actions/user';
+import {
+  LOGIN,
+  SIGNUP,
+  UPDATE_EMAIL,
+  UPDATE_PASSWORD,
+  UPDATE_FIRSTNAME,
+  UPDATE_LASTNAME,
+} from '../actions/user';
 
 const user = (state = {}, action) => {
   switch (action.type) {
@@ -11,6 +18,10 @@ const user = (state = {}, action) => {
       return {...state, email: action.payload};
     case UPDATE_PASSWORD:
       return {...state, password: action.payload};
+    case UPDATE_FIRSTNAME:
+      return {...state, firstname: action.payload};
+    case UPDATE_LASTNAME:
+      return {...state, lastname: action.payload};
     default:
       return state;
   }

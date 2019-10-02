@@ -13,6 +13,7 @@ const BottomNavigator = createMaterialBottomTabNavigator(
     Home: {screen: Dashboard},
     ListCheck: {screen: ListCheck},
     Schedule: {
+      //set up schedule package add icon on bottom tab
       screen: DateNav,
       navigationOptions: {
         tabBarIcon: <Icon name="calendar-alt" size={22} />,
@@ -21,8 +22,10 @@ const BottomNavigator = createMaterialBottomTabNavigator(
     Employees: {screen: Employees},
   },
   {
+    //set up initial page and bottom tabs attributes
     initialRouteName: 'Home',
     barStyle: {backgroundColor: 'white'},
+    //add animated shifting
     shifting: true,
   },
 );
