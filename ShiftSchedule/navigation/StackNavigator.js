@@ -1,8 +1,9 @@
 import {createAppContainer} from 'react-navigation';
-import Login from '../screens/Login';
-import Signup from '../screens/Signup';
+import Login from '../Auth/Login';
+import Signup from '../Auth/Signup';
 import {createStackNavigator} from 'react-navigation-stack';
 
+//Auth navigator which navigate between login and sign up pages
 const StackNavigator = createStackNavigator(
   {
     Login: {

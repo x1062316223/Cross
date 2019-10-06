@@ -1,53 +1,21 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {View, StyleSheet, Platform, ScrollView, Dimensions} from 'react-native';
+import {View, Platform, ScrollView, Alert} from 'react-native';
 //import all the basic component we have used
 import {Header, Button, ListItem} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import {db} from '../config/Firebase';
 import moment from 'moment';
+//import list items
+import {items} from '../assets/checklist';
+import {styles} from '../assets/styles';
+import {connect} from 'react-redux';
 
 const list = [];
-const windowW = Dimensions.get('window').width;
-const windowH = Dimensions.get('window').height;
 
-const items = [
-  // this is the parent or 'item'
-  {
-    name: 'Upstairs',
-    id: 1,
-    // these are the children or 'sub items'
-    children: [
-      {
-        name: 'Cleaning A',
-        id: 10,
-      },
-      {
-        name: 'Washing A',
-        id: 11,
-      },
-    ],
-  },
-  {
-    name: 'Downstairs',
-    id: 2,
-    // these are the children or 'sub items'
-    children: [
-      {
-        name: 'Cleaning B',
-        id: 20,
-      },
-      {
-        name: 'Washing B',
-        id: 21,
-      },
-    ],
-  },
-];
-
-export default class ListCheck extends React.Component {
+class ListCheck extends React.Component {
   static navigationOptions = {
     tabBarIcon: <Icon name="clipboard-check" size={22} />,
   };
@@ -59,12 +27,12 @@ export default class ListCheck extends React.Component {
     this.state = {list};
   }
 
-  componentDidMount() {
+  getCheckedList() {
     db.collection('checkList')
       .get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          if ((doc.data().date = moment().format())) {
+          if ((doc.data().date = moment().format('YYYYMMDD'))) {
             var item = {
               job: doc.data().job,
               checkedBy: doc.data().checkedBy,
@@ -78,6 +46,9 @@ export default class ListCheck extends React.Component {
         console.log('Error getting documents', err);
       });
   }
+  componentDidMount() {
+    this.getCheckedList();
+  }
 
   saveCheckList = () => {
     this.state.selectedItems.map(value => {
@@ -86,76 +57,40 @@ export default class ListCheck extends React.Component {
           if (item.id === value) {
             //save job to database
             //get current date
-            var date = moment().format();
+            var date = moment().format('YYYYMMDDHHmm');
             //create object of job done
             const jobDone = {
-              checkedBy: 'Glade',
+              checkedBy: this.props.user.email,
               job: item.name,
               date: date,
             };
             db.collection('checkList')
               .doc()
               .set(jobDone);
+            Alert.alert('You have successfully checked');
           }
         });
       });
     });
   };
 
-  // saveCheckList = () => {
-  //   this.state.selectedItems.map(value => {
-  //     console.log(value);
-  //     items.map(item => {
-  //       item.map(i => {
-  //         if ((i.id = value)) {
-  //           console.log(i);
-  //         }
-  //       });
-  //       if (item.children.id === value) {
-  //         console.log(item.name);
-
-  //         item.children.find(child => {
-  //           if ((child.id = value)) {
-  //             console.log(child.name);
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // };
   onSelectedItemsChange = selectedItems => {
     this.setState({selectedItems});
   };
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     list: list,
-  //   };
-  // }
-
-  // _onPressItem = index => {
-  //   // loop over your state data and create newStateArray
-  //   let newState = this.state.list.map((val, i) => {
-  //     if (i === index) {
-  //       // change selected value of pressed entry
-  //       return {...val, selected: !val.selected};
-  //     }
-  //     //otherwise just return current value
-  //   });
-
-  //   this.setState({list: newState});
-  //   console.log(list);
-  // };
 
   //Detail Screen to show from any Open detail button
   render() {
     return (
-      <View style={{height: windowH, width: windowW}}>
+      <View style={styles.View}>
         <Header
           containerStyle={styles.header}
           centerComponent={{text: 'Check List', style: {color: '#fff'}}}
         />
         <SectionedMultiSelect
+          //space for notch in iPhone
+          {...Platform.select({
+            ios: {modalWithSafeAreaView: true},
+          })}
           hideSearch={true}
           items={items}
           uniqueKey="id"
@@ -165,19 +100,16 @@ export default class ListCheck extends React.Component {
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onSelectedItemsChange}
           selectedItems={this.state.selectedItems}
+          showRemoveAll={true}
         />
         <Button title="Submit" onPress={this.saveCheckList} />
         <ScrollView>
           {this.state.list.map((l, i) => (
             <ListItem
               key={i}
-              leftAvatar={{source: {uri: l.avatar_url}}}
               title={l.job}
               subtitle={l.checkedBy}
               bottomDivider
-              onPress={() =>
-                this.props.navigation.navigate('UserDetail', this.key)
-              }
             />
           ))}
         </ScrollView>
@@ -185,12 +117,10 @@ export default class ListCheck extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  header: {
-    ...Platform.select({
-      android: {height: 56, paddingTop: 0},
-    }),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(ListCheck);

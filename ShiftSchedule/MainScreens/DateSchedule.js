@@ -1,58 +1,86 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {View, StyleSheet, Platform} from 'react-native';
-import {Header, ListItem} from 'react-native-elements';
+import {View, StyleSheet, Platform, Alert, Button} from 'react-native';
+import {Header} from 'react-native-elements';
+import {db} from '../config/Firebase';
+import {items} from '../assets/checklist';
+import SectionedMultiSelect from 'react-native-sectioned-multi-select';
+import {connect} from 'react-redux';
 
-const list = [
-  {
-    name: 'Amy Farha',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    subtitle: 'Vice President',
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    subtitle: 'Vice Chairman',
-  },
-];
-export default class DateSchedule extends React.Component {
+const list = [];
+
+class DateSchedule extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: false,
+      selectedItems: [],
+      thisdate: this.props.navigation.state.params.thisdate,
     };
+    this.state = {list};
   }
+
+  saveCheckList = () => {
+    this.state.selectedItems.map(value => {
+      items.map(obj => {
+        obj.children.map(item => {
+          if (item.id === value) {
+            //save job to database
+            //get current date
+            //create object of job done
+            const jobDone = {
+              checkedBy: this.props.user.email,
+              date: this.props.navigation.state.params.thisdate,
+            };
+            db.collection('Schedule')
+              .doc()
+              .set(jobDone);
+            Alert.alert('You have successfully checked');
+          }
+        });
+      });
+    });
+  };
+  onSelectedItemsChange = selectedItems => {
+    this.setState({selectedItems});
+  };
 
   render() {
     return (
       <View>
         <Header
           containerStyle={styles.header}
-          centerComponent={{text: 'Assign Employee', style: {color: '#fff'}}}
+          centerComponent={{
+            text:
+              'Assign Employee' +
+              '/' +
+              this.props.navigation.state.params.thisdate,
+            style: {color: '#fff'},
+          }}
           leftComponent={{
             text: 'Back',
             style: {color: '#fff'},
             onPress: () => this.props.navigation.goBack(),
           }}
         />
-        {list.map((l, i) => (
-          <ListItem
-            key={i}
-            leftAvatar={{source: {uri: l.avatar_url}}}
-            title={l.name}
-            subtitle={l.subtitle}
-            bottomDivider
-            checkBox={{
-              key: {i},
-              title: null,
-              checked: this.state.checked,
-              onPress: () => this.setState({checked: !this.state.checked}),
-            }}
-          />
-        ))}
+        <SectionedMultiSelect
+          //space for notch in iPhone
+          {...Platform.select({
+            ios: {modalWithSafeAreaView: true},
+          })}
+          modalWithTouchable={true}
+          hideSearch={true}
+          items={items}
+          uniqueKey="id"
+          subKey="children"
+          selectText="Choose some things..."
+          showDropDowns={true}
+          readOnlyHeadings={true}
+          onSelectedItemsChange={this.onSelectedItemsChange}
+          selectedItems={this.state.selectedItems}
+          showRemoveAll={true}
+        />
+        <Button title="Submit" onPress={this.saveCheckList} />
       </View>
     );
   }
@@ -66,3 +94,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const mapStateToProps = state => {
+  return {
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps)(DateSchedule);

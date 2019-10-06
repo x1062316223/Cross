@@ -2,16 +2,10 @@
 import React from 'react';
 import Firebase from '../config/Firebase';
 //import react in our code.
-import {
-  Text,
-  View,
-  Button,
-  StyleSheet,
-  Platform,
-  StatusBar,
-} from 'react-native';
-import {Header, ListItem} from 'react-native-elements';
+import {View, Button} from 'react-native';
+import {Header} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import {styles} from '../assets/styles';
 
 export default class Dashboard extends React.Component {
   static navigationOptions = {
@@ -26,6 +20,7 @@ export default class Dashboard extends React.Component {
   }
   handleSignout = () => {
     Firebase.auth().signOut();
+    global.user = null;
     this.props.navigation.navigate('Login');
   };
   render() {
@@ -44,12 +39,3 @@ export default class Dashboard extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  header: {
-    ...Platform.select({
-      android: {height: 56, paddingTop: 0},
-    }),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

@@ -1,4 +1,5 @@
 import Firebase, {db} from '../config/Firebase.js';
+import {Alert} from 'react-native';
 
 // define types
 export const UPDATE_LASTNAME = 'UPDATE_LASTNAME';
@@ -55,6 +56,7 @@ export const signup = () => {
           email: email,
           firstname: firstname,
           lastname: lastname,
+          position: 'staff',
         };
 
         //save user details to firebase cloud
@@ -65,7 +67,7 @@ export const signup = () => {
         dispatch({type: SIGNUP, payload: user});
       }
     } catch (e) {
-      alert(e);
+      Alert.alert(e);
     }
   };
 };
@@ -81,7 +83,7 @@ export const login = () => {
 
       dispatch(getUser(response.user.uid));
     } catch (e) {
-      alert(e);
+      Alert.alert(e);
     }
   };
 };
@@ -96,7 +98,7 @@ export const getUser = uid => {
 
       dispatch({type: LOGIN, payload: user.data()});
     } catch (e) {
-      alert(e);
+      Alert.alert(e);
     }
   };
 };

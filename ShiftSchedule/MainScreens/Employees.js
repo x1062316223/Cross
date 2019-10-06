@@ -1,10 +1,11 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {ScrollView, StyleSheet, Platform, View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {ListItem, Header} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {db} from '../config/Firebase';
+import {styles} from '../assets/styles';
 
 //import all the basic component we have used
 
@@ -38,7 +39,7 @@ export default class Employees extends React.Component {
   //Detail Screen to show from any Open detail button
   render() {
     return (
-      <View>
+      <View style={styles.View}>
         <Header
           containerStyle={styles.header}
           centerComponent={{text: 'Employees', style: {color: '#fff'}}}
@@ -61,12 +62,3 @@ export default class Employees extends React.Component {
     );
   }
 }
-const styles = StyleSheet.create({
-  header: {
-    ...Platform.select({
-      android: {height: 56, paddingTop: 0},
-    }),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

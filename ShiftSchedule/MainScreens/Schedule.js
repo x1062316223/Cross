@@ -1,27 +1,37 @@
 //This is an example code for Bottom Navigation//
 import React from 'react';
 //import react in our code.
-import {Text, View, Button, StyleSheet, Platform} from 'react-native';
+import {View, ScrollView} from 'react-native';
 import {Header, ListItem} from 'react-native-elements';
 import CalendarStrip from 'react-native-calendar-strip';
 import moment from 'moment';
+import {styles} from '../assets/styles';
+import {db} from '../config/Firebase';
 
-const list = [
-  {
-    name: 'Amy Farha',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-    subtitle: 'Vice President',
-  },
-  {
-    name: 'Chris Jackson',
-    avatar_url:
-      'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-    subtitle: 'Vice Chairman',
-  },
-];
+const list = [];
 
 export default class Schedule extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {list};
+  }
+  componentDidMount() {
+    db.collection('users')
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          var item = {
+            name: doc.data().email,
+            subtitle: doc.data().uid,
+          };
+          list.push(item);
+          this.setState({list: list});
+        });
+      })
+      .catch(err => {
+        console.log('Error getting documents', err);
+      });
+  }
   getDateMarking(day) {
     const {markedDates} = this.props;
     if (markedDates.length === 0) {
@@ -44,8 +54,10 @@ export default class Schedule extends React.Component {
         />
 
         <CalendarStrip
-          onDateSelected={() =>
-            this.props.navigation.navigate('Date', this.date)
+          onDateSelected={date =>
+            this.props.navigation.navigate('Date', {
+              thisdate: moment(date).format('YYYYMMDD'),
+            })
           }
           calendarAnimation={{type: 'parallel', duration: 30}}
           daySelectionAnimation={{
@@ -54,31 +66,22 @@ export default class Schedule extends React.Component {
             borderWidth: 1,
             borderHighlightColor: 'white',
           }}
-          style={{height: 100, paddingTop: 20, paddingBottom: 10}}
+          style={styles.calendar}
           iconContainer={{flex: 0.1}}
         />
-        {list.map((l, i) => (
-          <ListItem
-            key={i}
-            leftAvatar={{source: {uri: l.avatar_url}}}
-            title={l.name}
-            subtitle={l.subtitle}
-            bottomDivider
-            onPress={() =>
-              this.props.navigation.navigate('UserDetail', this.key)
-            }
-          />
-        ))}
+        <ScrollView>
+          {list.map((l, i) => (
+            <ListItem
+              key={i}
+              leftAvatar={{source: {uri: l.avatar_url}}}
+              title={l.name}
+              subtitle={l.subtitle}
+              bottomDivider
+              onPress={() => this.props.navigation.navigate('UserDetail')}
+            />
+          ))}
+        </ScrollView>
       </View>
     );
   }
 }
-const styles = StyleSheet.create({
-  header: {
-    ...Platform.select({
-      android: {height: 56, paddingTop: 0},
-    }),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
